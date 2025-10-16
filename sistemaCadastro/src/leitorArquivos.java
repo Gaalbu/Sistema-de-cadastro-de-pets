@@ -125,7 +125,7 @@ public class leitorArquivos {
                     System.out.println("Não há cadastros." + e.getMessage());
                 }
             }else{
-                //Usaremos o Posicao para saber qual das perguntas particionadas é para comparar.
+                
                 try(Stream<Path> arquivos = Files.list(pasta)){
                 arquivos
                     .filter(arquivo -> {
