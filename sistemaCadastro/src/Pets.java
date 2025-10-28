@@ -207,7 +207,7 @@ public class Pets {
             opcao = leitor.lerInput();
             if (opcao.equals("1")){
                 System.out.println("Escreva qual critério você quer utilizar, entre: ");
-                for (; escolhas.get(iPosicao) == null;iPosicao++) {
+                for (; iPosicao < escolhas.size();iPosicao++) {
                     System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
                 }
 
@@ -233,7 +233,7 @@ public class Pets {
             
             else if(opcao.equals("2")){
                 System.out.println("Escreva qual critério você quer utilizar, entre: ");
-                for (; escolhas.get(iPosicao) == null;iPosicao++) {
+                for (iPosicao = 0; iPosicao < escolhas.size();iPosicao++) {
                     System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
                 }
                 String filtroPrimario = leitor.lerInput();
@@ -246,7 +246,9 @@ public class Pets {
                 escolhas.remove(filtroPrimario);
                 System.out.println("Agora, o outro critério: ");
                 
-                for (; escolhas.get(iPosicao) == null;iPosicao++) {
+
+
+                for (iPosicao = 0; escolhas.get(iPosicao) == null;iPosicao++) {
                     System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
                 }
                 
@@ -256,9 +258,9 @@ public class Pets {
                     throw new Exception("Critério não corresponde aos explicitados");
                 }
 
-                System.out.print("Comparar " + filtroPrimario + ","+ filtroSecundario + " com: ");
+                System.out.println("Comparar " + filtroPrimario + " com: ");
                 String entrada1 = leitor.lerInput();
-                System.out.print(" E:");
+                System.out.println("E comparar " + filtroSecundario + " com: ");
                 String entrada2 = leitor.lerInput();
 
                 leitor.listarCadastrados(filtroPrimario, filtroSecundario, entrada1, entrada2);

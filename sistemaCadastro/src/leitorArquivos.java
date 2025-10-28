@@ -167,80 +167,79 @@ public class leitorArquivos {
 
 
     private boolean atendeTodosOsFiltros(List<String> linhas, Map<String, String> filtros) {
-        
-        //lista tudo se sem filtros.
-        if (filtros.isEmpty()) {
-            return true;
-        }
-
-        // Itera por cada filtro
-        for (Map.Entry<String, String> filtro : filtros.entrySet()) {
-            
-            String chave = filtro.getKey();         
-            String valorDesejado = filtro.getValue();
-            
-            int indiceLinha = -1; // -1 significa "não encontrado"
-            boolean usarContains = false; // Define se vamos usar .contains ou .equals
-            
-            // Mapeia a "chave" (String) para o índice da linha (Int).
-            switch (chave.toLowerCase()) {
-                case "nome":
-                    indiceLinha = 0; 
-                    usarContains = true;
-                    break;
-                //Pular tipo pois já foi previamente filtrado.
-                
-                    case "sexo":
-                    indiceLinha = 2; 
-                    break;
-                case "endereço":
-                    indiceLinha = 3; 
-                    usarContains = true;
-                    break;
-                case "idade":
-                    indiceLinha = 4; 
-                    break;
-                case "peso":
-                    indiceLinha = 5; 
-                    break;
-                case "raça":
-                    indiceLinha = 6;
-                    usarContains = true;
-                    break;
-                default:
-                    System.err.println("Filtro desconhecido: " + chave);
-                    continue; 
-            }
-
-            // Verifica se o arquivo tem linhas suficientes
-            if (indiceLinha == -1 || linhas.size() <= indiceLinha) {
-                return false; // Arquivo não tem a linha, falha no filtro
-            }
-
-            // Extrai a linha
-            String valorReal = linhas.get(indiceLinha);
-
-            // limpeza para não explodir o output
-            if (chave.equalsIgnoreCase("idade") || chave.equalsIgnoreCase("peso")) {
-                // Remove tudo que não for dígito
-                valorReal = valorReal.replaceAll("[^0-9]", "");
-            }
-            
-            // Comparação
-            boolean match;
-            if (usarContains) {
-                match = valorReal.toLowerCase().contains(valorDesejado.toLowerCase());
-            } else {
-                match = valorReal.equalsIgnoreCase(valorDesejado);
-            }
-
-            // Se UM filtro não bater, o arquivo inteiro é rejeitado.
-            if (!match) {
-                return false;
-            }
-        }
-        
-        // Se o loop terminou, é porque TODOS os filtros bateram, logo -> sucesso.
+    
+    //lista tudo
+    if (filtros.isEmpty()) {
         return true;
+    }
+
+    for (Map.Entry<String, String> filtro : filtros.entrySet()) {
+        
+        String chave = filtro.getKey();
+        String valorDesejado = filtro.getValue();
+        int indiceLinha = -1;
+        boolean usarContains = false;
+        
+        switch (chave.toLowerCase()) {
+            case "nome":
+                indiceLinha = 0; // Linha 1
+                usarContains = true;
+                break;
+            //tipo é pulado pq n é filtrado assim...
+            case "sexo":
+                indiceLinha = 2; 
+                break;
+            case "endereço":
+                indiceLinha = 3; 
+                usarContains = true;
+                break;
+            case "idade":
+                indiceLinha = 4; 
+                break;
+            case "peso":
+                indiceLinha = 5; 
+                break;
+            case "raça":
+                indiceLinha = 6; 
+                usarContains = true;
+                break;
+            default:
+                System.err.println("Filtro desconhecido: " + chave);
+                continue; 
+        }
+
+        if (indiceLinha == -1 || linhas.size() <= indiceLinha) {
+            return false;
+        }
+
+        String linhaComPrefixo = linhas.get(indiceLinha);
+        String valorReal;
+        
+        try {
+            // pega o texto depois do " - "
+            valorReal = linhaComPrefixo.substring(linhaComPrefixo.indexOf("-") + 1).trim();
+        } catch (Exception e) {
+            // Se a linha não tiver " - ", usa a linha inteira.
+            valorReal = linhaComPrefixo;
+        }
+
+        // limpa "Idade" e "Peso"
+        if (chave.equalsIgnoreCase("idade") || chave.equalsIgnoreCase("peso")) {
+            // Pega a primeira parte antes do espaço (ex: "0.x" de "0.x anos")
+            valorReal = valorReal.split(" ")[0];
+        }
+        
+        boolean match;
+        if (usarContains) {
+            match = valorReal.toLowerCase().contains(valorDesejado.toLowerCase());
+        } else {
+            match = valorReal.equalsIgnoreCase(valorDesejado);
+        }
+
+        if (!match) {
+            return false;
+        }
+    }
+    return true;
     }
 }

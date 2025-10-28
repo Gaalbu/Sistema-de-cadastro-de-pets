@@ -58,7 +58,7 @@ public class Menu {
                 case 5:
                     //Listar por critérios.
                     try{
-                        pets.BuscarCadastros();
+                        pets.BuscarCadastrosComCritérios();
                     }catch(Exception e){
                         System.out.println("Não há pets cadastrados/Não há pets que atinjam os critérios.");
                     }
