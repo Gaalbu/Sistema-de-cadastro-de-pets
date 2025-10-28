@@ -102,17 +102,56 @@ public class leitorArquivos {
 
     public void listarCadastrados(String filtro, String input){
         Path pasta = Paths.get("sistemaCadastro/src/petsCadastrados");
-        
-        
-        
+
+
+        if (filtro.isBlank() && input.isBlank()){
+            try(Stream<Path> arquivos = Files.list(pasta)){ //Listagem completa devida a ausência de filtros+input
+                arquivos
+                    .filter(arquivo -> {
+                        try {
+                            List <String> linhas = particionarArquivo(arquivo.toString());
+
+                            return linhas.stream().anyMatch(linha -> linha.contains(input));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+                    })
+                    .forEach(arquivo -> {
+                        try {
+                            List<String> linhas = particionarArquivo(arquivo.toString());
+                            System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
+                            linhas.forEach(System.out::println);
+                            System.out.println(); // linha em branco
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }catch(IOException e){
+                    System.out.println("Não há cadastros.");
+            }
+        }
+
+
+
+
         if(filtro.isBlank()){
             try(Stream<Path> arquivos = Files.list(pasta)){
                 arquivos
                     .filter(Files::isRegularFile) //Se de fato é um arquivo
-                    .forEach(System.out::println);
+                    .forEach(arquivo -> {
+                        try {
+                            List<String> linhas = particionarArquivo(arquivo.toString());
+                            System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
+                            linhas.forEach(System.out::println);
+                            System.out.println(); // linha em branco
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
 
             }catch(IOException e){
-                System.out.println("Não há cadastros." + e.getMessage());
+                System.out.println("Não há cadastros.");
             }
         }else{
             if(filtro.equals("Nome")){
@@ -120,12 +159,20 @@ public class leitorArquivos {
                 arquivos
                     .filter(Files::isRegularFile) //Se de fato é um arquivo
                     .filter(arquivo -> arquivo.getFileName().toString().toLowerCase().contains(filtro.toLowerCase()))
-                    .forEach(System.out::println);
+                    .forEach(arquivo -> {
+                    try {
+                        List<String> linhas = particionarArquivo(arquivo.toString());
+                        System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
+                        linhas.forEach(System.out::println);
+                        System.out.println(); // linha em branco
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
                 }catch(IOException e){
-                    System.out.println("Não há cadastros." + e.getMessage());
+                    System.out.println("Não há cadastros.");
                 }
             }else{
-                
                 try(Stream<Path> arquivos = Files.list(pasta)){
                 arquivos
                     .filter(arquivo -> {
@@ -138,7 +185,16 @@ public class leitorArquivos {
                             return false;
                         }
                     })
-                    .forEach(System.out::println); //Printa todos que atendem as expectativas
+                    .forEach(arquivo -> {
+                        try {
+                            List<String> linhas = particionarArquivo(arquivo.toString());
+                            System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
+                            linhas.forEach(System.out::println);
+                            System.out.println(); // linha em branco
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }); //Printa todos que atendem as expectativas
                 }catch(IOException e){
                     System.out.println("Não há cadastros." + e.getMessage());
                 }

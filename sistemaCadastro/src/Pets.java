@@ -188,8 +188,12 @@ public class Pets {
         }
 
     }
+    public void BuscarCadastros(){
+        leitor.listarCadastrados("","");
+    }
 
-    public void BuscarCadastros() throws Exception{
+
+    public void BuscarCadastrosComCritérios() throws Exception{
         System.out.println("Deseja pesquisar por 1 ou 2 critérios de busca?");
         String opcao = leitor.lerInput();
         if (opcao.equals("1")){
