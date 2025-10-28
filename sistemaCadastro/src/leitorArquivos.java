@@ -8,13 +8,17 @@ import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class leitorArquivos {
-    private String caminhoFormulario = "sistemaCadastro/src/formulario.txt";
+    private String caminhoFormulario = "sistemaCadastro/src/formulario.txt"; //src/formulario.txt
     private BufferedReader leitor;
+    private record ArquivoComConteudo(Path path, List<String> linhas) {}
+    
     
     public String getCaminhoFormulario() {
         return caminhoFormulario;
@@ -100,112 +104,143 @@ public class leitorArquivos {
         return entrada;
     }
 
+    public void listarCadastrados(String filtro, String filtro2, String input1, String input2){
+    
+        Map<String, String> filtros = new HashMap<>();
+
+    
+        if (filtro != null && !filtro.isBlank() && input1 != null && !input1.isBlank()) {
+            filtros.put(filtro, input1);
+        }
+        
+    
+        if (filtro2 != null && !filtro2.isBlank() && input2 != null && !input2.isBlank()) {
+            filtros.put(filtro2, input2);
+        }
+
+        //chama com map o método mais complexo
+        listarArquivosComFiltros(filtros);
+    }
+
     public void listarCadastrados(String filtro, String input){
+        // Reutiliza a lógica do método mais complexo, passando filtros vazios para o segundo par
+        listarCadastrados(filtro, "", input, "");
+    }
+
+    
+    private void listarArquivosComFiltros(Map<String, String> filtros) {
         Path pasta = Paths.get("sistemaCadastro/src/petsCadastrados");
 
-
-        if (filtro.isBlank() && input.isBlank()){
-            try(Stream<Path> arquivos = Files.list(pasta)){ //Listagem completa devida a ausência de filtros+input
-                arquivos
-                    .filter(arquivo -> {
-                        try {
-                            List <String> linhas = particionarArquivo(arquivo.toString());
-
-                            return linhas.stream().anyMatch(linha -> linha.contains(input));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    })
-                    .forEach(arquivo -> {
-                        try {
-                            List<String> linhas = particionarArquivo(arquivo.toString());
-                            System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
-                            linhas.forEach(System.out::println);
-                            System.out.println(); // linha em branco
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }catch(IOException e){
-                    System.out.println("Não há cadastros.");
-            }
-        }
-
-
-
-
-        if(filtro.isBlank()){
-            try(Stream<Path> arquivos = Files.list(pasta)){
-                arquivos
-                    .filter(Files::isRegularFile) //Se de fato é um arquivo
-                    .forEach(arquivo -> {
-                        try {
-                            List<String> linhas = particionarArquivo(arquivo.toString());
-                            System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
-                            linhas.forEach(System.out::println);
-                            System.out.println(); // linha em branco
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-
-            }catch(IOException e){
-                System.out.println("Não há cadastros.");
-            }
-        }else{
-            if(filtro.equals("Nome")){
-                try(Stream<Path> arquivos = Files.list(pasta)){
-                arquivos
-                    .filter(Files::isRegularFile) //Se de fato é um arquivo
-                    .filter(arquivo -> arquivo.getFileName().toString().toLowerCase().contains(filtro.toLowerCase()))
-                    .forEach(arquivo -> {
+        try (Stream<Path> streamArquivos = Files.list(pasta)) {
+            
+            List<ArquivoComConteudo> resultados = streamArquivos
+                .filter(Files::isRegularFile)
+                .map(path -> { //Lê o conteúdo e transforma em um pacote (acc)
                     try {
-                        List<String> linhas = particionarArquivo(arquivo.toString());
-                        System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
-                        linhas.forEach(System.out::println);
-                        System.out.println(); // linha em branco
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        List<String> linhas = particionarArquivo(path.toString());
+                        return new ArquivoComConteudo(path, linhas);
+                    } catch (IOException e) {
+                        System.err.println("Falha ao ler o arquivo: " + path);
+                        return null;
                     }
+                })
+                .filter(acc -> acc != null) //remove os que falharam na leitura
+                .filter(acc -> atendeTodosOsFiltros(acc.linhas(), filtros)) //O filtro MÁGICO
+                .toList(); //coleta os resultados e vira lista
+
+            //printa os resultados
+            if (resultados.isEmpty()) {
+                System.out.println("Nenhum arquivo encontrado com os filtros combinados.");
+            } else {
+                System.out.println("Arquivos encontrados:");
+                resultados.forEach(acc -> {
+                    System.out.println("=== Conteúdo do arquivo: " + acc.path() + " ===");
+                    acc.linhas().forEach(System.out::println);
+                    System.out.println();
                 });
-                }catch(IOException e){
-                    System.out.println("Não há cadastros.");
-                }
-            }else{
-                try(Stream<Path> arquivos = Files.list(pasta)){
-                arquivos
-                    .filter(arquivo -> {
-                        try {
-                            List <String> linhas = particionarArquivo(arquivo.toString());
+            }
 
-                            return linhas.stream().anyMatch(linha -> linha.contains(input));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    })
-                    .forEach(arquivo -> {
-                        try {
-                            List<String> linhas = particionarArquivo(arquivo.toString());
-                            System.out.println("=== Conteúdo do arquivo: " + arquivo + " ===");
-                            linhas.forEach(System.out::println);
-                            System.out.println(); // linha em branco
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }); //Printa todos que atendem as expectativas
-                }catch(IOException e){
-                    System.out.println("Não há cadastros." + e.getMessage());
-                }
+        } catch (IOException e) {
+            System.out.println("Erro ao listar arquivos na pasta: " + e.getMessage());
+        }
+    }
 
+
+    private boolean atendeTodosOsFiltros(List<String> linhas, Map<String, String> filtros) {
+        
+        //lista tudo se sem filtros.
+        if (filtros.isEmpty()) {
+            return true;
+        }
+
+        // Itera por cada filtro
+        for (Map.Entry<String, String> filtro : filtros.entrySet()) {
+            
+            String chave = filtro.getKey();         
+            String valorDesejado = filtro.getValue();
+            
+            int indiceLinha = -1; // -1 significa "não encontrado"
+            boolean usarContains = false; // Define se vamos usar .contains ou .equals
+            
+            // Mapeia a "chave" (String) para o índice da linha (Int).
+            switch (chave.toLowerCase()) {
+                case "nome":
+                    indiceLinha = 0; 
+                    usarContains = true;
+                    break;
+                //Pular tipo pois já foi previamente filtrado.
+                
+                    case "sexo":
+                    indiceLinha = 2; 
+                    break;
+                case "endereço":
+                    indiceLinha = 3; 
+                    usarContains = true;
+                    break;
+                case "idade":
+                    indiceLinha = 4; 
+                    break;
+                case "peso":
+                    indiceLinha = 5; 
+                    break;
+                case "raça":
+                    indiceLinha = 6;
+                    usarContains = true;
+                    break;
+                default:
+                    System.err.println("Filtro desconhecido: " + chave);
+                    continue; 
+            }
+
+            // Verifica se o arquivo tem linhas suficientes
+            if (indiceLinha == -1 || linhas.size() <= indiceLinha) {
+                return false; // Arquivo não tem a linha, falha no filtro
+            }
+
+            // Extrai a linha
+            String valorReal = linhas.get(indiceLinha);
+
+            // limpeza para não explodir o output
+            if (chave.equalsIgnoreCase("idade") || chave.equalsIgnoreCase("peso")) {
+                // Remove tudo que não for dígito
+                valorReal = valorReal.replaceAll("[^0-9]", "");
             }
             
-            
-            
-            
+            // Comparação
+            boolean match;
+            if (usarContains) {
+                match = valorReal.toLowerCase().contains(valorDesejado.toLowerCase());
+            } else {
+                match = valorReal.equalsIgnoreCase(valorDesejado);
+            }
 
-
+            // Se UM filtro não bater, o arquivo inteiro é rejeitado.
+            if (!match) {
+                return false;
+            }
         }
+        
+        // Se o loop terminou, é porque TODOS os filtros bateram, logo -> sucesso.
+        return true;
     }
 }

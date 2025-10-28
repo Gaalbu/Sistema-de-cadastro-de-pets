@@ -194,36 +194,85 @@ public class Pets {
 
 
     public void BuscarCadastrosComCritérios() throws Exception{
-        System.out.println("Deseja pesquisar por 1 ou 2 critérios de busca?");
-        String opcao = leitor.lerInput();
-        if (opcao.equals("1")){
-            List<String> escolhas = new ArrayList<>(Arrays.asList("Nome","Sexo","Idade","Peso","Raça","Endereço"));
-            
-
-            System.out.println("Escreva qual critério você quer utilizar, entre: ");
-            int iPosicao = 0;
-            for (; escolhas.get(iPosicao) == null;iPosicao++) {
-                System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
-            }
-
-            String criterio = leitor.lerInput();
-            System.out.print("Comparar " + criterio + " com: ");
-            String input = leitor.lerInput();
-            System.out.println();
-            for (String filtro : escolhas) {
-                if(filtro.equals(criterio)){
-                    leitor.listarCadastrados(criterio,input);
-                    break;
-                }
-                iPosicao++;
-            }
-
-        }else if(opcao.equals("2")){
-
-        }else{
-            throw new Exception("Escolha um valor válido de critérios");
-        }
+        String tipo;
+        String opcao;
+        List<String> escolhas = new ArrayList<>(Arrays.asList("Nome","Sexo","Idade","Peso","Raça","Endereço"));
+        int iPosicao = 0;
         
+        System.out.println("Antes de procurarmos, qual é o tipo do animal?(Gato,Cachorro)");
+        tipo = leitor.lerInput();
+
+        if(tipo.toLowerCase().equals("Gato".toLowerCase()) || tipo.toLowerCase().equals("Cachorro".toLowerCase())){
+            System.out.println("Deseja pesquisar por 1 ou 2 critérios de busca?");
+            opcao = leitor.lerInput();
+            if (opcao.equals("1")){
+                System.out.println("Escreva qual critério você quer utilizar, entre: ");
+                for (; escolhas.get(iPosicao) == null;iPosicao++) {
+                    System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
+                }
+
+                String criterio = leitor.lerInput();
+                if(!escolhas.contains(criterio)){
+                    throw new Exception(criterio+" não é válido dentro de escolhas");
+                }
+                
+                System.out.print("Comparar " + criterio + " com: ");
+                String input = leitor.lerInput();
+                
+
+                System.out.println();
+                for (String filtro : escolhas) {
+                    if(filtro.equals(criterio)){
+                        leitor.listarCadastrados(criterio,input);
+                        break;
+                    }
+                    iPosicao++;
+                }
+
+            }
+            
+            else if(opcao.equals("2")){
+                System.out.println("Escreva qual critério você quer utilizar, entre: ");
+                for (; escolhas.get(iPosicao) == null;iPosicao++) {
+                    System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
+                }
+                String filtroPrimario = leitor.lerInput();
+                
+                
+                if(!escolhas.contains(filtroPrimario)){
+                    throw new Exception("Critério não corresponde aos explicitados");
+                }
+                
+                escolhas.remove(filtroPrimario);
+                System.out.println("Agora, o outro critério: ");
+                
+                for (; escolhas.get(iPosicao) == null;iPosicao++) {
+                    System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
+                }
+                
+                String filtroSecundario = leitor.lerInput();
+                
+                if(!escolhas.contains(filtroSecundario)){
+                    throw new Exception("Critério não corresponde aos explicitados");
+                }
+
+                System.out.print("Comparar " + filtroPrimario + ","+ filtroSecundario + " com: ");
+                String entrada1 = leitor.lerInput();
+                System.out.print(" E:");
+                String entrada2 = leitor.lerInput();
+
+                leitor.listarCadastrados(filtroPrimario, filtroSecundario, entrada1, entrada2);
+                
+
+
+            }else{
+                throw new Exception("Escolha um valor válido de critérios");
+            }
+            
+        }
+        else{
+            throw new Exception("Tipo especificado não existe");
+        }
     }
 
     public float getIdade() {
