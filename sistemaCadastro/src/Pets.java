@@ -208,7 +208,7 @@ public class Pets {
             if (opcao.equals("1")){
                 System.out.println("Escreva qual critério você quer utilizar, entre: ");
                 for (; iPosicao < escolhas.size();iPosicao++) {
-                    System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
+                    System.out.println((iPosicao+1) + ". " + escolhas.get(iPosicao)); //iposicao+1 para ficar '1.', '2.' ...
                 }
 
                 String criterio = leitor.lerInput();
@@ -234,7 +234,7 @@ public class Pets {
             else if(opcao.equals("2")){
                 System.out.println("Escreva qual critério você quer utilizar, entre: ");
                 for (iPosicao = 0; iPosicao < escolhas.size();iPosicao++) {
-                    System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
+                    System.out.println((iPosicao+1) + ". " + escolhas.get(iPosicao));
                 }
                 String filtroPrimario = leitor.lerInput();
                 
@@ -249,7 +249,7 @@ public class Pets {
 
 
                 for (iPosicao = 0; escolhas.get(iPosicao) == null;iPosicao++) {
-                    System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
+                    System.out.println((iPosicao+1) + ". " + escolhas.get(iPosicao));
                 }
                 
                 String filtroSecundario = leitor.lerInput();
@@ -276,6 +276,13 @@ public class Pets {
             throw new Exception("Tipo especificado não existe");
         }
     }
+
+
+    public void alterarCadastro() throws Exception{
+        System.out.println("Para alterar um cadastro, ");
+    }
+
+
 
     public float getIdade() {
         return idade;

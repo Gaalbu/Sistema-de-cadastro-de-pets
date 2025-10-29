@@ -36,7 +36,7 @@ public class Menu {
                 case 2:
                     //Alterar um dado do pet
                     try{
-                        //pets.alterarCadastro();
+                        pets.alterarCadastro();
                     }catch (Exception e){
                         System.out.println("Impossível alterar o cadastro do pet");
                     }
@@ -44,7 +44,11 @@ public class Menu {
                     break;
                 case 3:
                     //Deletar um pet da lista de cadastrados
-                    
+                     try{
+                        // pets.excluirCadastro();
+                    }catch (Exception e){
+                        System.out.println("Impossível alterar o cadastro do pet");
+                    }
 
                     break;
                 case 4:
