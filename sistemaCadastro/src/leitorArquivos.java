@@ -103,6 +103,17 @@ public class leitorArquivos {
     public void listarCadastrados(String filtro, String input){
         Path pasta = Paths.get("sistemaCadastro/src/petsCadastrados");
         
+        if((filtro.isBlank()) && (input.isBlank())){
+            try(Stream<Path> arquivos = Files.list(pasta)){
+                arquivos
+                    .filter(Files::isRegularFile) //Se de fato é um arquivo
+                    .forEach(System.out::println);
+
+            }catch(IOException e){
+                System.out.println("Não há cadastros.");
+            }
+        }
+
         
         
         if(filtro.isBlank()){
@@ -112,7 +123,7 @@ public class leitorArquivos {
                     .forEach(System.out::println);
 
             }catch(IOException e){
-                System.out.println("Não há cadastros." + e.getMessage());
+                System.out.println("Não há cadastros.");
             }
         }else{
             if(filtro.equals("Nome")){

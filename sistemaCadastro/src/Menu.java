@@ -49,16 +49,22 @@ public class Menu {
                     break;
                 case 4:
                     //Listar todos os pets
-                    try{
+                    try {
                         pets.BuscarCadastros();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         System.out.println("Não há pets cadastrados");
                     }
+
+
 
                     break;
                 case 5:
                     //Listar por critérios.
-                    
+                    try{
+                        pets.BuscarCadastrosComCritério();
+                    }catch(Exception e){
+                        System.out.println("Não há pets cadastrados");
+                    }
 
                     break;
                 case 6:

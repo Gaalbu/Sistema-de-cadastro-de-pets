@@ -190,6 +190,13 @@ public class Pets {
     }
 
     public void BuscarCadastros() throws Exception{
+        leitor.listarCadastrados("",""); //Retorna todos.
+    }
+    
+    
+    
+    
+    public void BuscarCadastrosComCritério() throws Exception{
         System.out.println("Deseja pesquisar por 1 ou 2 critérios de busca?");
         String opcao = leitor.lerInput();
         if (opcao.equals("1")){
@@ -197,6 +204,7 @@ public class Pets {
             
 
             System.out.println("Escreva qual critério você quer utilizar, entre: ");
+            System.out.println(escolhas);
             int iPosicao = 0;
             for (; escolhas.get(iPosicao) == null;iPosicao++) {
                 System.out.println(iPosicao + ". " + escolhas.get(iPosicao));
