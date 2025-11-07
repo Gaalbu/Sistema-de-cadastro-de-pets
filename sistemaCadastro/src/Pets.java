@@ -10,11 +10,17 @@ import java.util.List;
 
 public class Pets {
     leitorArquivos leitor = new leitorArquivos();
-    //Constante padrão para campos não informados:
-    public static final String naoInformado = "Não informado";
     private float peso,idade;
     private String nome, tipoAnimal, sexo, endereco, raca;
     
+    //Constante do caminho do projeto.
+    public static final String caminhoProjeto = "sistemaCadastro/src/petsCadastrados/";
+    
+    //Constante padrão para campos não informados:
+    public static final String naoInformado = "Não informado";
+    
+    //Lista feita para manter os objetos pets acessíveis.
+    public ArrayList<Pets> listaPets = new ArrayList<>();
     
 
     public Pets(String nome, String tipoAnimal, String sexo, String endereco, float idade, float peso, String raca){
@@ -134,7 +140,6 @@ public class Pets {
         
 
         //Formatação final das variáveis que são o corpo do arquivo do pet
-        String conteudoArquivoPet = "";
         String nomeFinal = getNome();
         String tipoFinal = getTipoAnimal();
         String sexoFinal = getSexo();
@@ -152,24 +157,53 @@ public class Pets {
 
         String pesoFinal = (getPeso() == -1) ? naoInformado : String.valueOf(getPeso()) + " kgs";
         String racaFinal = getRaca();
+        
+        
+        //20231101T1234-FLORZINHADASILVA.TXT
+        String caminhoNovoPet = criarCaminhoNovoPet(criarNomeArquivoPet(tempo, nomeFinal));
+        
+        //Preenchendo arquivo.
+        String conteudoArquivoPet = formatarConteudoCadastro(nomeFinal,tipoFinal, sexoFinal, enderecoFinal, idadeFinal, pesoFinal, racaFinal);
+        
+        //Nome + conteudo
+        criarArquivoPet(caminhoNovoPet, conteudoArquivoPet);
 
-        conteudoArquivoPet += "1 - " + nomeFinal + "\n2 - ";
-        conteudoArquivoPet += tipoFinal + "\n3 - ";
-        conteudoArquivoPet += sexoFinal + "\n4 - ";
-        conteudoArquivoPet += enderecoFinal + "\n5 - ";
-        conteudoArquivoPet += idadeFinal + "\n6 - ";
-        conteudoArquivoPet += pesoFinal + "\n7 - ";
-        conteudoArquivoPet += racaFinal;
         
         
-        
-        //`20231101T1234-FLORZINHADASILVA.TXT
-        String nomeArquivoPet = tempo.AnoMesDia() + "T" + tempo.Horario() + "-" + getNome().toUpperCase().replaceAll("\\s+", "") + ".TXT";
-        String caminhoNovoPet = "sistemaCadastro/src/petsCadastrados/" + nomeArquivoPet;
+        //Adicionando o novo pet na lista para registrarmos e ficar mais simples de puxarmos.
+        //Mantendo getIdade e getPeso pois cada um sofreu formatações na versão final.
+        Pets novoPet = new Pets(nomeFinal, tipoFinal, sexoFinal, enderecoFinal, getIdade(), getPeso(), racaFinal);
+        listaPets.add(novoPet);
 
-        Path path = Paths.get(caminhoNovoPet);
+    }
+
+
+    //Método para formatar a criação do nome do arquivo.
+    private String criarNomeArquivoPet(tempoCadastroPet tempoCriacao, String nome){
+        return tempoCriacao.AnoMesDia() + "T" + tempoCriacao.Horario() + "-" + nome.toUpperCase().replaceAll("\\s+", "") + ".TXT";
+    }
+
+
+    private String criarCaminhoNovoPet(String nomeArquivo){
+        return caminhoProjeto + nomeArquivo;
+    }
+
+
+    private String formatarConteudoCadastro(String nome, String tipo, String sexo, String endereco, String idade, String peso, String raca){
+        return 
+        "1 - " + nome 
+        + "\n2 - " + tipo 
+        + "\n3 - " + sexo 
+        + "\n4 - " + endereco + 
+        "\n5 - " + idade + 
+        "\n6 - " + peso + 
+        "\n7 - " + raca;
+    }
+
+    private void criarArquivoPet(String caminhoArquivo, String conteudoArquivo){
+        Path path = Paths.get(caminhoArquivo);
         try{
-            // Cria pastas através do caminh
+            // Cria pastas através do caminho
             if(Files.notExists(path.getParent())){
                 Files.createDirectories(path.getParent());
             }
@@ -181,13 +215,14 @@ public class Pets {
             }
             
             //Finalmente escreve no arquivo :D
-            Files.write(path, Collections.singletonList(conteudoArquivoPet), StandardOpenOption.APPEND);
+            Files.write(path, Collections.singletonList(conteudoArquivo), StandardOpenOption.APPEND);
             System.out.println("Texto gravado com sucesso!");
         }catch (IOException e){
             e.printStackTrace();
         }
-
     }
+
+
     public void BuscarCadastros(){
         leitor.listarCadastrados("","");
     }
@@ -279,7 +314,23 @@ public class Pets {
 
 
     public void alterarCadastro() throws Exception{
-        System.out.println("Para alterar um cadastro, ");
+        System.out.println("Para alterar um cadastro, precisamos que você selecione o cadastro que quer alterar.");
+        BuscarCadastros();
+        
+        System.out.println("Para selecionar um cadastro, digite o nome do pet exatamente como está escrito");
+        String nomeBuscado = leitor.lerInput();
+
+        try {
+            leitor.listarCadastrados("nome", nomeBuscado);
+        } catch (Exception e) {
+            //falha na busca 
+            System.err.println("Não há um cadastro que atenda o nome.");
+            throw new Exception();
+        }
+
+
+
+
     }
 
 

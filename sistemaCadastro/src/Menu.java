@@ -38,7 +38,7 @@ public class Menu {
                     try{
                         pets.alterarCadastro();
                     }catch (Exception e){
-                        System.out.println("Impossível alterar o cadastro do pet");
+                        System.out.println("Impossível alterar o cadastro.");
                     }
 
                     break;
