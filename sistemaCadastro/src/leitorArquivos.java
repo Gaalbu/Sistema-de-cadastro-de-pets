@@ -105,7 +105,11 @@ public class leitorArquivos {
     }
 
     public void listarCadastrados(String filtro, String filtro2, String input1, String input2){
-    
+        filtro = filtro.toLowerCase();
+        filtro2 = filtro2.toLowerCase();
+
+
+
         Map<String, String> filtros = new HashMap<>();
 
     

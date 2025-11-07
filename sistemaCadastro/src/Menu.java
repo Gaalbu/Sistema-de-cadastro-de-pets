@@ -28,7 +28,7 @@ public class Menu {
                     try {
                         pets.cadastrarPet();
                     } catch (Exception e) {
-                        System.out.println("Impossível cadastrar o pet");
+                        System.out.println("Impossível cadastrar o pet. Motivo: " + e.getMessage());
                     }
 
 
@@ -38,7 +38,7 @@ public class Menu {
                     try{
                         pets.alterarCadastro();
                     }catch (Exception e){
-                        System.out.println("Impossível alterar o cadastro.");
+                        System.out.println("Impossível alterar o cadastro. Motivo:" + e.getMessage());
                     }
 
                     break;
@@ -47,7 +47,7 @@ public class Menu {
                      try{
                         pets.deletarCadastro();
                     }catch (Exception e){
-                        System.out.println("Impossível alterar o cadastro do pet");
+                        System.out.println("Impossível alterar o cadastro do pet. Motivo: " + e.getMessage());
                     }
 
                     break;
@@ -56,7 +56,7 @@ public class Menu {
                     try {
                         pets.BuscarCadastros();
                     } catch (Exception e) {
-                        System.out.println("Não há pets cadastrados");
+                        System.out.println("Não há pets cadastrados.");
                     }
                     break;
                 case 5:
@@ -64,7 +64,7 @@ public class Menu {
                     try{
                         pets.BuscarCadastrosComCriterios();
                     }catch(Exception e){
-                        System.out.println("Não há pets cadastrados/Não há pets que atinjam os critérios.");
+                        System.out.println("Não há pets cadastrados/Não há pets que atinjam os critérios. Motivo:" + e.getMessage());
                     }
 
                     break;

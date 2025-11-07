@@ -223,6 +223,7 @@ public class Pets {
     public void BuscarCadastrosComCriterios() throws Exception{
         String tipo;
         String opcao;
+        String resposta;
         List<String> escolhas = new ArrayList<>(Arrays.asList("Nome","Sexo","Idade","Peso","Raça","Endereço"));
         int iPosicao = 0;
         
@@ -233,24 +234,22 @@ public class Pets {
             System.out.println("Deseja pesquisar por 1 ou 2 critérios de busca?");
             opcao = leitor.lerInput();
             if (opcao.equals("1")){
-                System.out.println("Escreva qual critério você quer utilizar, entre: ");
+                System.out.println("Digite o número do critério que você quer utilizar, entre: ");
                 for (; iPosicao < escolhas.size();iPosicao++) {
                     System.out.println((iPosicao+1) + ". " + escolhas.get(iPosicao)); //iposicao+1 para ficar '1.', '2.' ...
                 }
+                resposta = leitor.lerInput();
+                int escolhaCriterio = Integer.parseInt(resposta);
+                String criterioEscolhido = escolhas.get(escolhaCriterio - 1);
 
-                String criterio = leitor.lerInput();
-                if(!escolhas.contains(criterio)){
-                    throw new Exception(criterio+" não é válido dentro de escolhas");
-                }
-                
-                System.out.print("Comparar " + criterio + " com: ");
+                System.out.print("Comparar " + criterioEscolhido + " com: ");
                 String input = leitor.lerInput();
                 
 
                 System.out.println();
                 for (String filtro : escolhas) {
-                    if(filtro.equals(criterio)){
-                        leitor.listarCadastrados(criterio,input);
+                    if(filtro.equals(criterioEscolhido)){
+                        leitor.listarCadastrados(criterioEscolhido,input);
                         break;
                     }
                     iPosicao++;
@@ -259,27 +258,27 @@ public class Pets {
             }
             
             else if(opcao.equals("2")){
-                System.out.println("Escreva qual critério você quer utilizar, entre: ");
+                System.out.println("Digite o número do critério você quer utilizar, entre: ");
                 for (iPosicao = 0; iPosicao < escolhas.size();iPosicao++) {
                     System.out.println((iPosicao+1) + ". " + escolhas.get(iPosicao));
                 }
-                String filtroPrimario = leitor.lerInput();
-                
-                
-                if(!escolhas.contains(filtroPrimario)){
-                    throw new Exception("Critério não corresponde aos explicitados");
-                }
+                resposta = leitor.lerInput();
+                int criterioPrimarioPosicao = Integer.parseInt(resposta);
+                String filtroPrimario = escolhas.get(criterioPrimarioPosicao - 1);
                 
                 escolhas.remove(filtroPrimario);
-                System.out.println("Agora, o outro critério: ");
-                
 
-
-                for (iPosicao = 0; escolhas.get(iPosicao) == null;iPosicao++) {
+                System.out.println("Critérios restantes:");
+                for (iPosicao = 0; iPosicao < escolhas.size();iPosicao++) {
                     System.out.println((iPosicao+1) + ". " + escolhas.get(iPosicao));
                 }
                 
-                String filtroSecundario = leitor.lerInput();
+                System.out.println("Agora, o número do outro critério: ");
+                
+                
+                resposta = leitor.lerInput();
+                int criterioSecundarioPosicao = Integer.parseInt(resposta);
+                String filtroSecundario = escolhas.get(criterioSecundarioPosicao - 1);
                 
                 if(!escolhas.contains(filtroSecundario)){
                     throw new Exception("Critério não corresponde aos explicitados");
