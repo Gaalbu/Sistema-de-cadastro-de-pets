@@ -144,18 +144,8 @@ public class Pets {
         String tipoFinal = getTipoAnimal();
         String sexoFinal = getSexo();
         String enderecoFinal = getEndereco();
-        String idadeFinal;
-
-        if(getIdade() == -1){ //Idade não informada no cadastro
-            idadeFinal = naoInformado;
-        }else if (getIdade() == -2){ //Idade menor que um ano
-            idadeFinal = "0.x anos";
-        }else{
-            idadeFinal = getIdade() + " anos";
-        }
-
-
-        String pesoFinal = (getPeso() == -1) ? naoInformado : String.valueOf(getPeso()) + " kgs";
+        String idadeFinal = formatarIdade();
+        String pesoFinal = formatarPeso();
         String racaFinal = getRaca();
         
         
@@ -227,8 +217,9 @@ public class Pets {
         leitor.listarCadastrados("","");
     }
 
-
-    public void BuscarCadastrosComCritérios() throws Exception{
+    
+    
+    public void BuscarCadastrosComCriterios() throws Exception{
         String tipo;
         String opcao;
         List<String> escolhas = new ArrayList<>(Arrays.asList("Nome","Sexo","Idade","Peso","Raça","Endereço"));
@@ -312,8 +303,19 @@ public class Pets {
         }
     }
 
+    /**
+     * Método auxiliar para SOBRESCREVER um arquivo com o novo conteúdo.
+     */
+    private void sobrescreverArquivoPet(Path caminho, List<String> linhas) throws IOException {
+        // TRUNCATE_EXISTING apaga o conteúdo antigo antes de escrever.
+        Files.write(caminho, linhas, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+        System.out.println("Cadastro alterado com sucesso!");
+    }
+
+
 
     public void alterarCadastro() throws Exception{
+        
         System.out.println("Para alterar um cadastro, precisamos que você selecione o cadastro que quer alterar.");
         BuscarCadastros();
         
@@ -321,18 +323,135 @@ public class Pets {
         String nomeBuscado = leitor.lerInput();
 
         try {
-            leitor.listarCadastrados("nome", nomeBuscado);
+            List<String> resultadoBusca = leitor.BuscarArquivoEspecifico(nomeBuscado);
+
+            // Verificação de segurança
+            if (resultadoBusca == null || resultadoBusca.size() < 2) {
+                System.err.println("Não foi possível encontrar o cadastro.");
+                return;
+            }
+
+            String caminhoString = resultadoBusca.get(0);
+            String conteudoCompleto = resultadoBusca.get(1);
+
+            // Converte o caminho String para Path
+            Path caminhoDoArquivo = Paths.get(caminhoString);
+            
+            // Converte o CONTEÚDO (String única) para uma LISTA DE LINHAS
+            // \\r?\\n para funcionar no Windows e Linux/Mac.
+            List<String> linhasDoArquivo = new ArrayList<>(Arrays.asList(conteudoCompleto.split("\\r?\\n")));
+
+            System.out.println("Em que linha você quer alterar? (1-7)");
+            int linhaEscolhida = Integer.parseInt(leitor.lerInput());
+
+            if (linhaEscolhida < 1 || linhaEscolhida > 7) {
+                System.err.println("Linha inválida. Deve ser entre 1 e 7.");
+                return;
+            }
+
+            Pets validador = new Pets();
+            String linhaFormatada = ""; // A nova string formatada para o arquivo
+            
+            switch (linhaEscolhida) {
+                case 1: // Nome
+                    System.out.println("Digite o novo Nome:");
+                    String novoNome = leitor.lerInput();
+                    validador.setNome(novoNome); // Validação
+                    linhaFormatada = "1 - " + validador.getNome(); // Formatação
+                    break;
+                
+                case 2: // Tipo
+                    System.out.println("Digite o novo Tipo (Gato ou Cachorro):");
+                    String novoTipo = leitor.lerInput();
+                    validador.setTipoAnimal(novoTipo); 
+                    linhaFormatada = "2 - " + validador.getTipoAnimal(); 
+                    break;
+                
+                case 3: // Sexo
+                    System.out.println("Digite o novo Sexo (Masculino ou Feminino):");
+                    String novoSexo = leitor.lerInput();
+                    validador.setSexo(novoSexo); 
+                    linhaFormatada = "3 - " + validador.getSexo(); 
+                    break;
+
+                case 4: // Endereço
+                    System.out.println("Digite o novo Endereço:");
+                    String endereco = "";
+                    System.out.println("Rua:");
+                    endereco += leitor.lerInput() + ", ";
+                    
+                    System.out.println("Número:");
+                    String numeroEndereco = leitor.lerInput();
+                    
+                    if (numeroEndereco.isBlank()){
+                        endereco += naoInformado + ", ";
+                    } else {
+                        try {
+                            endereco += Integer.parseInt(numeroEndereco) + ", ";
+                        } catch (NumberFormatException e){
+                            throw new NumberFormatException("Número informado não é um inteiro.");
+                        }
+                    }
+                    System.out.println("Cidade:");
+                    endereco += leitor.lerInput();
+                    
+                    validador.setEndereco(endereco); 
+                    linhaFormatada = "4 - " + validador.getEndereco();
+                    break;
+
+                case 5: // Idade
+                    System.out.println("Digite a nova Idade:");
+                    String idadeString = leitor.lerInput();
+                    float idadeFormatada;
+                    if (idadeString.isBlank()){
+                        idadeFormatada = -1;
+                    } else {
+                        try {
+                            idadeFormatada = Float.parseFloat(idadeString);
+                        } catch (NumberFormatException e){
+                            throw new NumberFormatException("Idade informada não é um número.");
+                        }
+                    }
+                    validador.setIdade(idadeFormatada); // Validação
+                    linhaFormatada = "5 - " + validador.formatarIdade(); // Formatação
+                    break;
+
+                case 6: // Peso
+                    System.out.println("Digite o novo Peso:");
+                    String pesoString = leitor.lerInput();
+                    float pesoFormatado;
+                    if(pesoString.isBlank()){
+                        pesoFormatado = -1;
+                    } else {
+                        try{
+                            pesoFormatado = Float.parseFloat(pesoString);
+                        } catch (NumberFormatException e){
+                            throw new NumberFormatException("Peso informado não é um número.");
+                        }
+                    }
+                    validador.setPeso(pesoFormatado); // Validação
+                    linhaFormatada = "6 - " + validador.formatarPeso(); // Formatação
+                    break;
+
+                case 7: // Raça
+                    System.out.println("Digite a nova Raça:");
+                    String novaRaca = leitor.lerInput();
+                    validador.setRaca(novaRaca); // Validação 
+                    linhaFormatada = "7 - " + validador.getRaca(); // Formatação
+                    break;
+            }
+            
+            // Atualiza a lista de linhas
+            linhasDoArquivo.set(linhaEscolhida - 1, linhaFormatada);
+
+            // Sobrescreve o arquivo no disco
+            sobrescreverArquivoPet(caminhoDoArquivo, linhasDoArquivo);
+
         } catch (Exception e) {
-            //falha na busca 
-            System.err.println("Não há um cadastro que atenda o nome.");
-            throw new Exception();
+            // Captura falhas de validação
+            System.err.println("Falha ao alterar o cadastro: " + e.getMessage());
         }
-
-
-
-
     }
-
 
 
     public float getIdade() {
@@ -354,6 +473,15 @@ public class Pets {
     }
 
 
+    private String formatarIdade(){
+        if(getIdade() == -1){ //Idade não informada no cadastro
+            return naoInformado;
+        }else if (getIdade() == -2){ //Idade menor que um ano
+            return "0.x anos";
+        }else{
+            return getIdade() + " anos";
+        }
+    }
 
     public float getPeso() {
         return peso;
@@ -372,7 +500,9 @@ public class Pets {
         this.peso = peso;
     }
 
-
+    private String formatarPeso(){
+        return (getPeso() == -1) ? naoInformado : String.valueOf(getPeso()) + " kgs";
+    }
 
     public String getNome() {
         return nome;
@@ -455,7 +585,7 @@ public class Pets {
 
 
     public void setRaca(String raca) {
-        boolean temCharEspecial = !nome.matches("[A-Za-z ]+");
+        boolean temCharEspecial = !raca.matches("[A-Za-z ]+");
         
         if(raca.isBlank()){
             raca = naoInformado;

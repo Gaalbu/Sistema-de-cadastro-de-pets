@@ -166,6 +166,44 @@ public class leitorArquivos {
     }
 
 
+    public List<String> BuscarArquivoEspecifico(String nomeBusca){
+        //Populando o filtro para nossa função atende os filtros
+        Map<String,String> filtro = new HashMap<>();
+        filtro.put("nome", nomeBusca);
+
+        //Lista do output com o nomeArquivo, conteudoArquivo.
+        List<String> arquivoInfo = new ArrayList<>();
+
+        Path pasta = Paths.get("sistemaCadastro/src/petsCadastrados");
+
+        try (Stream<Path> streamArquivos = Files.list(pasta)) {
+            
+            List<ArquivoComConteudo> resultados = streamArquivos
+                .filter(Files::isRegularFile)
+                .map(path -> { 
+                    try {
+                        List<String> linhas = particionarArquivo(path.toString());
+                        return new ArquivoComConteudo(path, linhas);
+                    } catch (IOException e) {
+                        System.err.println("Falha ao ler o arquivo: " + path);
+                        return null;
+                    }
+                })
+                .filter(acc -> acc != null)
+            .filter(acc -> atendeTodosOsFiltros(acc.linhas(), filtro))
+                .toList();
+
+            resultados.forEach(acc -> {
+                arquivoInfo.add(acc.path().toString());
+                arquivoInfo.add(acc.linhas().toString());
+            });
+        } catch (IOException e) {
+            System.out.println("Erro ao listar arquivos na pasta: " + e.getMessage());
+        }
+        return arquivoInfo;
+    }
+    
+    
     private boolean atendeTodosOsFiltros(List<String> linhas, Map<String, String> filtros) {
     
     //lista tudo

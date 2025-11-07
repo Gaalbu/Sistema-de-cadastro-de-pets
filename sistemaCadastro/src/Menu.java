@@ -62,7 +62,7 @@ public class Menu {
                 case 5:
                     //Listar por critérios.
                     try{
-                        pets.BuscarCadastrosComCritérios();
+                        pets.BuscarCadastrosComCriterios();
                     }catch(Exception e){
                         System.out.println("Não há pets cadastrados/Não há pets que atinjam os critérios.");
                     }
