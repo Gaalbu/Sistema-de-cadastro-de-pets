@@ -1,6 +1,0 @@
-classe pets: ✅
-cadastro de ficha de pets: ✅
-alteração de ficha de pets: ✅
-delete de ficha de pets: pendente...
-busca de todas as fichas de pets: ✅
-busca por tag nas fichas de pets:✅
