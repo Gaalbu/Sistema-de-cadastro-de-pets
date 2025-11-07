@@ -315,10 +315,6 @@ public class Pets {
 
 
     public void alterarCadastro() throws Exception{
-        
-        System.out.println("Para alterar um cadastro, precisamos que você selecione o cadastro que quer alterar.");
-        BuscarCadastros();
-        
         System.out.println("Para selecionar um cadastro, digite o nome do pet exatamente como está escrito");
         String nomeBuscado = leitor.lerInput();
 

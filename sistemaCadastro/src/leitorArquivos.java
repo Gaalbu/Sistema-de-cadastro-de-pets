@@ -167,7 +167,7 @@ public class leitorArquivos {
 
 
     public List<String> BuscarArquivoEspecifico(String nomeBusca){
-        //Populando o filtro para nossa função atende os filtros
+        //Populando o filtro para nossa função atender os filtros
         Map<String,String> filtro = new HashMap<>();
         filtro.put("nome", nomeBusca);
 
@@ -195,7 +195,11 @@ public class leitorArquivos {
 
             resultados.forEach(acc -> {
                 arquivoInfo.add(acc.path().toString());
-                arquivoInfo.add(acc.linhas().toString());
+                
+                // .join tem como função recriar a formatação padrão que as linhas possuiam.
+                String conteudoReconstruido = String.join("\n", acc.linhas());
+                arquivoInfo.add(conteudoReconstruido);
+
             });
         } catch (IOException e) {
             System.out.println("Erro ao listar arquivos na pasta: " + e.getMessage());
