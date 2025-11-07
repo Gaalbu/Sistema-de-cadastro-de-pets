@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -312,20 +313,28 @@ public class Pets {
         System.out.println("Cadastro alterado com sucesso!");
     }
 
+    //Método para buscar o cadastro específico de um pet, partindo do nome
+    //Retorna: uma lista contendo o path no index 0 e o conteudo no index 1.
+    public List<String> BuscarPet() throws Exception{
+        System.out.println("Para buscar um cadastro, digite o nome do pet exatamente como está escrito");
+        String nome = leitor.lerInput();
+        
+        
+        List<String> resultado = new ArrayList<>();
+        resultado = leitor.BuscarArquivoEspecifico(nome);
+
+        // Verificação de segurança
+        if (resultado == null || resultado.size() < 2) {
+                throw new Exception("Não foi possível encontrar o cadastro.");
+            }
+
+        return resultado;
+    }
 
 
     public void alterarCadastro() throws Exception{
-        System.out.println("Para selecionar um cadastro, digite o nome do pet exatamente como está escrito");
-        String nomeBuscado = leitor.lerInput();
-
         try {
-            List<String> resultadoBusca = leitor.BuscarArquivoEspecifico(nomeBuscado);
-
-            // Verificação de segurança
-            if (resultadoBusca == null || resultadoBusca.size() < 2) {
-                System.err.println("Não foi possível encontrar o cadastro.");
-                return;
-            }
+            List<String> resultadoBusca = BuscarPet();
 
             String caminhoString = resultadoBusca.get(0);
             String conteudoCompleto = resultadoBusca.get(1);
@@ -446,6 +455,31 @@ public class Pets {
         } catch (Exception e) {
             // Captura falhas de validação
             System.err.println("Falha ao alterar o cadastro: " + e.getMessage());
+        }
+    }
+
+
+    public void deletarCadastro()throws Exception{
+        System.out.println("Atenção! a cadastros de arquivos é irreversível. Caso queria progedir mesmo assim, digite \"sim\"");
+        String confirmacao = leitor.lerInput();
+        
+        if (confirmacao.toLowerCase().equals("sim")){
+            try {
+                List<String> resultadoBusca = BuscarPet();
+                Path caminhoDoArquivo = Paths.get(resultadoBusca.get(0));
+                
+                Files.delete(caminhoDoArquivo);
+                System.out.println("Arquivo deletado com sucesso!");
+            }catch(NoSuchFileException e){
+                System.err.println("Erro: o arquivo não foi encontrado!");
+            
+            }catch(IOException e){
+                System.err.println("Erro geral em I/O.");
+            
+            }catch (Exception e) {
+                // Captura falhas de deleção.
+                System.err.println("Falha ao deletar o cadastro: " + e.getMessage());
+            }
         }
     }
 

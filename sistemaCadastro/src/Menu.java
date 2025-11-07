@@ -45,7 +45,7 @@ public class Menu {
                 case 3:
                     //Deletar um pet da lista de cadastrados
                      try{
-                        // pets.excluirCadastro();
+                        pets.deletarCadastro();
                     }catch (Exception e){
                         System.out.println("Impossível alterar o cadastro do pet");
                     }
